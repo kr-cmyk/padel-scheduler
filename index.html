@@ -1,0 +1,858 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="theme-color" content="#0a1628">
+  <title>11755 Wilshire Padel Reservations</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --bg: #0a1628;
+      --bg-card: #111d33;
+      --bg-card-hover: #162540;
+      --surface: #1a2d4a;
+      --border: #243a5e;
+      --text: #e8edf5;
+      --text-muted: #7b8fad;
+      --accent: #3b82f6;
+      --accent-glow: rgba(59, 130, 246, 0.25);
+      --accent-soft: rgba(59, 130, 246, 0.12);
+      --green: #22c55e;
+      --green-soft: rgba(34, 197, 94, 0.12);
+      --red: #ef4444;
+      --red-soft: rgba(239, 68, 68, 0.12);
+      --gold: #f59e0b;
+      --radius: 14px;
+      --radius-sm: 10px;
+      --safe-bottom: env(safe-area-inset-bottom, 0px);
+    }
+
+    html {
+      font-size: 16px;
+      -webkit-text-size-adjust: 100%;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100dvh;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Header */
+    .header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(10, 22, 40, 0.85);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+      padding: 16px 20px;
+      padding-top: max(16px, env(safe-area-inset-top));
+    }
+
+    .header h1 {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: 1.25rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      text-align: center;
+      background: linear-gradient(135deg, #e8edf5, #94a8c8);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .header .subtitle {
+      text-align: center;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-top: 2px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    /* Main */
+    .main {
+      max-width: 480px;
+      margin: 0 auto;
+      padding: 16px 16px calc(16px + var(--safe-bottom));
+    }
+
+    /* Section */
+    .section {
+      margin-bottom: 16px;
+    }
+
+    .section-label {
+      font-size: 0.7rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-bottom: 10px;
+      padding-left: 4px;
+    }
+
+    /* Calendar Strip */
+    .calendar-strip {
+      display: flex;
+      gap: 6px;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+      padding: 2px;
+    }
+    .calendar-strip::-webkit-scrollbar { display: none; }
+
+    .cal-day {
+      flex: 0 0 auto;
+      width: calc((100% - 36px) / 7);
+      min-width: 52px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 10px 6px;
+      border-radius: var(--radius-sm);
+      background: var(--bg-card);
+      border: 1.5px solid transparent;
+      cursor: pointer;
+      transition: all 0.2s;
+      -webkit-user-select: none;
+      user-select: none;
+    }
+
+    .cal-day:active {
+      transform: scale(0.95);
+    }
+
+    .cal-day .day-name {
+      font-size: 0.65rem;
+      font-weight: 500;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .cal-day .day-num {
+      font-size: 1.25rem;
+      font-weight: 700;
+      margin-top: 2px;
+    }
+
+    .cal-day.today .day-num {
+      color: var(--accent);
+    }
+
+    .cal-day.selected {
+      background: var(--accent);
+      border-color: var(--accent);
+      box-shadow: 0 4px 20px var(--accent-glow);
+    }
+
+    .cal-day.selected .day-name,
+    .cal-day.selected .day-num {
+      color: #fff;
+    }
+
+    /* Week nav */
+    .week-nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px;
+    }
+
+    .week-nav-btn {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      color: var(--text);
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 1rem;
+      transition: all 0.2s;
+    }
+
+    .week-nav-btn:active {
+      background: var(--surface);
+      transform: scale(0.92);
+    }
+
+    .week-nav-label {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    /* Time Slots */
+    .time-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .time-slot {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 16px;
+      border-radius: var(--radius-sm);
+      background: var(--bg-card);
+      border: 1.5px solid transparent;
+      cursor: pointer;
+      transition: all 0.2s;
+      -webkit-user-select: none;
+      user-select: none;
+    }
+
+    .time-slot:active:not(.booked) {
+      transform: scale(0.98);
+    }
+
+    .time-slot .slot-time {
+      font-size: 0.9rem;
+      font-weight: 600;
+    }
+
+    .time-slot .slot-status {
+      font-size: 0.7rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      padding: 4px 10px;
+      border-radius: 20px;
+    }
+
+    .time-slot.available .slot-status {
+      color: var(--green);
+      background: var(--green-soft);
+    }
+
+    .time-slot.booked {
+      opacity: 0.45;
+      cursor: not-allowed;
+    }
+
+    .time-slot.booked .slot-status {
+      color: var(--red);
+      background: var(--red-soft);
+    }
+
+    .time-slot.selected {
+      border-color: var(--accent);
+      background: var(--accent-soft);
+      box-shadow: 0 0 0 1px var(--accent);
+    }
+
+    .time-slot.selected .slot-status {
+      color: var(--accent);
+      background: var(--accent-glow);
+    }
+
+    /* Booking Form */
+    .booking-form {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px;
+      margin-top: 8px;
+      animation: slideUp 0.3s ease;
+    }
+
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(12px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .form-summary {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 14px;
+      background: var(--accent-soft);
+      border-radius: var(--radius-sm);
+      margin-bottom: 16px;
+      border: 1px solid rgba(59, 130, 246, 0.2);
+    }
+
+    .form-summary-icon {
+      font-size: 1.3rem;
+    }
+
+    .form-summary-text {
+      font-size: 0.82rem;
+      font-weight: 500;
+      line-height: 1.4;
+      color: var(--text);
+    }
+
+    .form-summary-text strong {
+      color: var(--accent);
+    }
+
+    .form-group {
+      margin-bottom: 14px;
+    }
+
+    .form-label {
+      display: block;
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    .form-input {
+      width: 100%;
+      padding: 12px 14px;
+      background: var(--surface);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-sm);
+      color: var(--text);
+      font-size: 1rem;
+      font-family: inherit;
+      outline: none;
+      transition: border-color 0.2s;
+      -webkit-appearance: none;
+      appearance: none;
+    }
+
+    .form-input:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px var(--accent-glow);
+    }
+
+    .form-input::placeholder {
+      color: var(--text-muted);
+      opacity: 0.6;
+    }
+
+    /* Waiver */
+    .waiver-box {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 14px;
+      margin-bottom: 14px;
+      max-height: 140px;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .waiver-box p {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      line-height: 1.6;
+      margin-bottom: 8px;
+    }
+
+    .waiver-box p:last-child {
+      margin-bottom: 0;
+    }
+
+    .checkbox-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      cursor: pointer;
+      -webkit-user-select: none;
+      user-select: none;
+      padding: 4px 0;
+    }
+
+    .checkbox-row input[type="checkbox"] {
+      width: 22px;
+      height: 22px;
+      flex-shrink: 0;
+      margin-top: 1px;
+      accent-color: var(--accent);
+      cursor: pointer;
+    }
+
+    .checkbox-label {
+      font-size: 0.82rem;
+      color: var(--text);
+      line-height: 1.4;
+    }
+
+    /* Button */
+    .btn-primary {
+      width: 100%;
+      padding: 16px;
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      border-radius: var(--radius-sm);
+      font-size: 1rem;
+      font-weight: 700;
+      font-family: inherit;
+      cursor: pointer;
+      transition: all 0.2s;
+      -webkit-appearance: none;
+      appearance: none;
+      margin-top: 4px;
+    }
+
+    .btn-primary:active {
+      transform: scale(0.97);
+      opacity: 0.9;
+    }
+
+    .btn-primary:disabled {
+      opacity: 0.35;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    /* Confirmation */
+    .confirmation {
+      text-align: center;
+      padding: 40px 20px;
+      animation: slideUp 0.4s ease;
+    }
+
+    .confirm-icon {
+      width: 72px;
+      height: 72px;
+      background: var(--green-soft);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 20px;
+      font-size: 2rem;
+    }
+
+    .confirm-title {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: 1.5rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .confirm-detail {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      line-height: 1.6;
+      margin-bottom: 4px;
+    }
+
+    .confirm-detail strong {
+      color: var(--text);
+    }
+
+    .btn-secondary {
+      display: inline-block;
+      margin-top: 24px;
+      padding: 12px 28px;
+      background: var(--surface);
+      color: var(--text);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      font-size: 0.9rem;
+      font-weight: 600;
+      font-family: inherit;
+      cursor: pointer;
+      transition: all 0.2s;
+      -webkit-appearance: none;
+      appearance: none;
+    }
+
+    .btn-secondary:active {
+      transform: scale(0.97);
+      background: var(--bg-card-hover);
+    }
+
+    /* Empty state */
+    .empty-state {
+      text-align: center;
+      padding: 32px 20px;
+      color: var(--text-muted);
+      font-size: 0.85rem;
+    }
+
+    .empty-state .icon {
+      font-size: 2rem;
+      margin-bottom: 8px;
+    }
+
+    /* Utility */
+    .mt-2 { margin-top: 8px; }
+  </style>
+</head>
+<body>
+
+<div class="header">
+  <h1>11755 Wilshire Padel Reservations</h1>
+  <div class="subtitle">Court Booking</div>
+</div>
+
+<div class="main" id="app"></div>
+
+<script>
+(function() {
+  // ---- State ----
+  const state = {
+    weekOffset: 0,
+    selectedDate: null,
+    selectedSlots: [],
+    email: '',
+    waiverChecked: false,
+    confirmed: false,
+    bookings: {} // { "2025-01-15": [9, 11, 14] }
+  };
+
+  // Seed some demo bookings
+  function seedBookings() {
+    const today = new Date();
+    for (let d = 0; d < 14; d++) {
+      const date = new Date(today);
+      date.setDate(today.getDate() + d);
+      const key = dateKey(date);
+      const booked = [];
+      // Randomly book 2-3 slots per day
+      const slots = [8,9,10,11,12,13,14,15,16,17];
+      const count = 2 + Math.floor(Math.random() * 2);
+      for (let i = 0; i < count; i++) {
+        const idx = Math.floor(Math.random() * slots.length);
+        booked.push(slots.splice(idx, 1)[0]);
+      }
+      state.bookings[key] = booked;
+    }
+  }
+  seedBookings();
+
+  // ---- Helpers ----
+  function dateKey(d) {
+    return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+  }
+
+  function getWeekDays(offset) {
+    const today = new Date();
+    const start = new Date(today);
+    start.setDate(today.getDate() + offset * 7);
+    // Go to start of week if offset != 0, otherwise start from today
+    const days = [];
+    for (let i = 0; i < 7; i++) {
+      const d = new Date(start);
+      d.setDate(start.getDate() + i);
+      days.push(d);
+    }
+    return days;
+  }
+
+  function formatDayName(d) {
+    return d.toLocaleDateString('en-US', { weekday: 'short' });
+  }
+
+  function formatMonthYear(days) {
+    const first = days[0];
+    const last = days[6];
+    if (first.getMonth() === last.getMonth()) {
+      return first.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+    }
+    return first.toLocaleDateString('en-US', { month: 'short' }) + ' – ' +
+           last.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
+  }
+
+  function formatHour(h) {
+    if (h === 0) return '12 AM';
+    if (h < 12) return h + ' AM';
+    if (h === 12) return '12 PM';
+    return (h - 12) + ' PM';
+  }
+
+  function formatSlotRange(slots) {
+    if (!slots.length) return '';
+    const sorted = [...slots].sort((a,b) => a - b);
+    return formatHour(sorted[0]) + ' – ' + formatHour(sorted[sorted.length - 1] + 1);
+  }
+
+  function isToday(d) {
+    const t = new Date();
+    return d.getDate() === t.getDate() && d.getMonth() === t.getMonth() && d.getFullYear() === t.getFullYear();
+  }
+
+  function isPast(d) {
+    const today = new Date();
+    today.setHours(0,0,0,0);
+    const check = new Date(d);
+    check.setHours(0,0,0,0);
+    return check < today;
+  }
+
+  function isSlotBooked(dateStr, hour) {
+    return (state.bookings[dateStr] || []).includes(hour);
+  }
+
+  function canSelectSlot(hour) {
+    if (!state.selectedSlots.length) return true;
+    const sorted = [...state.selectedSlots].sort((a,b) => a - b);
+    return hour === sorted[0] - 1 || hour === sorted[sorted.length - 1] + 1;
+  }
+
+  function isSlotPast(date, hour) {
+    if (!isToday(date)) return false;
+    const now = new Date();
+    return hour <= now.getHours();
+  }
+
+  // ---- Render ----
+  function render() {
+    const app = document.getElementById('app');
+
+    if (state.confirmed) {
+      app.innerHTML = renderConfirmation();
+      bindConfirmation();
+      return;
+    }
+
+    const days = getWeekDays(state.weekOffset);
+    let html = '';
+
+    // Week Navigation
+    html += `<div class="section">
+      <div class="week-nav">
+        <button class="week-nav-btn" id="prevWeek" ${state.weekOffset <= 0 ? 'disabled style="opacity:0.3;pointer-events:none"' : ''}>‹</button>
+        <span class="week-nav-label">${formatMonthYear(days)}</span>
+        <button class="week-nav-btn" id="nextWeek" ${state.weekOffset >= 3 ? 'disabled style="opacity:0.3;pointer-events:none"' : ''}>›</button>
+      </div>`;
+
+    // Calendar Strip
+    html += `<div class="calendar-strip">`;
+    days.forEach((d, i) => {
+      const key = dateKey(d);
+      const selected = state.selectedDate === key;
+      const today = isToday(d);
+      const past = isPast(d);
+      const classes = ['cal-day'];
+      if (selected) classes.push('selected');
+      if (today) classes.push('today');
+      html += `<div class="${classes.join(' ')}" data-date="${key}" ${past ? 'style="opacity:0.3;pointer-events:none"' : ''}>
+        <span class="day-name">${formatDayName(d)}</span>
+        <span class="day-num">${d.getDate()}</span>
+      </div>`;
+    });
+    html += `</div></div>`;
+
+    // Time Slots
+    if (state.selectedDate) {
+      html += `<div class="section">
+        <div class="section-label">Available Times</div>
+        <div class="time-grid">`;
+
+      const selDate = new Date(state.selectedDate + 'T00:00:00');
+      for (let h = 8; h <= 17; h++) {
+        const booked = isSlotBooked(state.selectedDate, h);
+        const past = isSlotPast(selDate, h);
+        const selected = state.selectedSlots.includes(h);
+        const canSelect = !booked && !past && (selected || canSelectSlot(h));
+
+        let cls = 'time-slot';
+        if (booked || past) cls += ' booked';
+        else if (selected) cls += ' selected';
+        else cls += ' available';
+
+        let statusText = 'Available';
+        let statusOverride = '';
+        if (booked) statusText = 'Booked';
+        else if (past) statusText = 'Past';
+        else if (selected) statusText = 'Selected';
+
+        const disabled = (booked || past || (!selected && !canSelect));
+
+        html += `<div class="${cls}" data-hour="${h}" ${disabled ? 'style="pointer-events:none"' : ''}>
+          <span class="slot-time">${formatHour(h)} – ${formatHour(h + 1)}</span>
+          <span class="slot-status">${statusText}</span>
+        </div>`;
+      }
+
+      html += `</div></div>`;
+
+      // Booking Form (if slots selected)
+      if (state.selectedSlots.length > 0) {
+        const selDate = new Date(state.selectedDate + 'T00:00:00');
+        const dateStr = selDate.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
+        const timeStr = formatSlotRange(state.selectedSlots);
+
+        html += `<div class="section">
+          <div class="booking-form">
+            <div class="form-summary">
+              <span class="form-summary-icon">🎾</span>
+              <span class="form-summary-text"><strong>${dateStr}</strong><br>${timeStr} · ${state.selectedSlots.length} hour${state.selectedSlots.length > 1 ? 's' : ''}</span>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="email">Email Address</label>
+              <input class="form-input" type="email" id="email" placeholder="you@email.com" value="${state.email}" autocomplete="email" inputmode="email">
+            </div>
+
+            <div class="form-group">
+              <div class="section-label" style="margin-bottom:8px">Liability Waiver</div>
+              <div class="waiver-box">
+                <p><strong>ASSUMPTION OF RISK & WAIVER OF LIABILITY</strong></p>
+                <p>I understand that playing padel involves inherent risks including but not limited to physical injury. I voluntarily assume all risks associated with my participation.</p>
+                <p>I hereby release 11755 Wilshire, its owners, employees, and agents from any and all liability for injury, illness, death, or property damage arising from my use of the padel court facilities.</p>
+                <p>I confirm that I am physically fit and have no medical conditions that would prevent safe participation. I agree to follow all posted rules and guidelines.</p>
+              </div>
+              <label class="checkbox-row" id="waiverLabel">
+                <input type="checkbox" id="waiver" ${state.waiverChecked ? 'checked' : ''}>
+                <span class="checkbox-label">I have read and agree to the liability waiver</span>
+              </label>
+            </div>
+
+            <button class="btn-primary" id="bookBtn" ${(!state.email || !state.waiverChecked) ? 'disabled' : ''}>
+              Confirm Reservation
+            </button>
+          </div>
+        </div>`;
+      }
+    } else {
+      html += `<div class="empty-state">
+        <div class="icon">📅</div>
+        <div>Select a date to view available time slots</div>
+      </div>`;
+    }
+
+    app.innerHTML = html;
+    bindEvents(days);
+  }
+
+  function renderConfirmation() {
+    const selDate = new Date(state.selectedDate + 'T00:00:00');
+    const dateStr = selDate.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
+    const timeStr = formatSlotRange(state.selectedSlots);
+
+    return `<div class="confirmation">
+      <div class="confirm-icon">✓</div>
+      <div class="confirm-title">You're Booked!</div>
+      <div class="confirm-detail mt-2"><strong>${dateStr}</strong></div>
+      <div class="confirm-detail"><strong>${timeStr}</strong></div>
+      <div class="confirm-detail" style="margin-top:8px">Confirmation sent to<br><strong>${state.email}</strong></div>
+      <button class="btn-secondary" id="newBooking">Make Another Reservation</button>
+    </div>`;
+  }
+
+  // ---- Event Binding ----
+  function bindEvents(days) {
+    // Week nav
+    const prev = document.getElementById('prevWeek');
+    const next = document.getElementById('nextWeek');
+    if (prev) prev.addEventListener('click', () => {
+      if (state.weekOffset > 0) { state.weekOffset--; state.selectedDate = null; state.selectedSlots = []; render(); }
+    });
+    if (next) next.addEventListener('click', () => {
+      if (state.weekOffset < 3) { state.weekOffset++; state.selectedDate = null; state.selectedSlots = []; render(); }
+    });
+
+    // Calendar days
+    document.querySelectorAll('.cal-day').forEach(el => {
+      el.addEventListener('click', () => {
+        const key = el.dataset.date;
+        state.selectedDate = key;
+        state.selectedSlots = [];
+        render();
+      });
+    });
+
+    // Time slots
+    document.querySelectorAll('.time-slot:not(.booked)').forEach(el => {
+      el.addEventListener('click', () => {
+        const hour = parseInt(el.dataset.hour, 10);
+        const idx = state.selectedSlots.indexOf(hour);
+        if (idx > -1) {
+          // Deselect: only allow removing from ends
+          const sorted = [...state.selectedSlots].sort((a,b) => a - b);
+          if (hour === sorted[0] || hour === sorted[sorted.length - 1]) {
+            state.selectedSlots.splice(idx, 1);
+          }
+        } else if (canSelectSlot(hour)) {
+          state.selectedSlots.push(hour);
+        }
+        render();
+      });
+    });
+
+    // Email
+    const emailInput = document.getElementById('email');
+    if (emailInput) {
+      emailInput.addEventListener('input', (e) => {
+        state.email = e.target.value;
+        updateBookBtn();
+      });
+      // Maintain cursor position
+      emailInput.focus();
+      emailInput.setSelectionRange(emailInput.value.length, emailInput.value.length);
+    }
+
+    // Waiver
+    const waiverCheckbox = document.getElementById('waiver');
+    if (waiverCheckbox) {
+      waiverCheckbox.addEventListener('change', (e) => {
+        state.waiverChecked = e.target.checked;
+        updateBookBtn();
+      });
+    }
+
+    // Book button
+    const bookBtn = document.getElementById('bookBtn');
+    if (bookBtn) {
+      bookBtn.addEventListener('click', () => {
+        if (state.email && state.waiverChecked && state.selectedSlots.length > 0) {
+          // Save booking
+          if (!state.bookings[state.selectedDate]) state.bookings[state.selectedDate] = [];
+          state.selectedSlots.forEach(h => state.bookings[state.selectedDate].push(h));
+          state.confirmed = true;
+          render();
+        }
+      });
+    }
+  }
+
+  function updateBookBtn() {
+    const btn = document.getElementById('bookBtn');
+    if (btn) {
+      btn.disabled = !(state.email && state.waiverChecked);
+    }
+  }
+
+  function bindConfirmation() {
+    const btn = document.getElementById('newBooking');
+    if (btn) {
+      btn.addEventListener('click', () => {
+        state.selectedDate = null;
+        state.selectedSlots = [];
+        state.email = '';
+        state.waiverChecked = false;
+        state.confirmed = false;
+        state.weekOffset = 0;
+        render();
+      });
+    }
+  }
+
+  // ---- Init ----
+  render();
+})();
+</script>
+
+</body>
+</html>
